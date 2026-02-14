@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+)
 
 //"time"
 
@@ -18,13 +21,14 @@ Real Backend Mapping
 Pizza factory = HTTP server
 Pizza Orders = incoming requests
 Workers = goroutines handling jobs
-Channel = request queue
+Channel of Orders = request queue
 WaitGroup = graceful shutdown
 */
 
 
 func worker(id int, orders <-chan int) {
-	
+
+	//keep receving order until channel is closed. if channel dont close, stuck here!!!
 	for order := range orders {
 		fmt.Println("Worker", id, "is making pizza", order)
 	}
@@ -42,8 +46,19 @@ func main() {
 	//Workers wait.
 
 	orders := make(chan int)
+	
+	var wg sync.WaitGroup
+	for workerId := 1; workerId <= 5; workerId++ {
+		wg.Add(1)
+		go func(workerId int) { 
+			defer wg.Done()
+			worker(workerId, orders)
+		}(workerId)
+	}
 
-
-
-
+	for order := 1; order <= 5 ; order++ {
+		orders <- order
+	}
+	close(orders) //if dont close, hang!range receiving orders until the channel is closed. they block forever waiting for more pizza order.
+	wg.Wait()
 }
