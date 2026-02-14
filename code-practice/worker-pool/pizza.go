@@ -12,17 +12,15 @@ You have many tasks.
 You have limited workers.
 Workers pull tasks from a shared queue.
 
-10 pizza orders arrive.
-3 pizza makers.
-There is one order counter (channel)
-
-Real Backend Mapping
-
 Pizza factory = HTTP server
 Pizza Orders = incoming requests
 Workers = goroutines handling jobs
 Channel of Orders = request queue
 WaitGroup = graceful shutdown
+
+Unbuffered channel → handshake
+Buffered channel → queue
+Close → end of stream
 */
 
 
