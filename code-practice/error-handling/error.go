@@ -100,6 +100,14 @@ func (a *Account)WithdrawServiceCustomer(amount int) {
 
 	}
 	fmt.Println("DEBUG:", err)
+	printErrorChain(err)
+}
+
+func printErrorChain(err error) {
+	for err != nil {
+		fmt.Printf("Error: %v (type: %T)\n", err, err)
+		err = errors.Unwrap(err)
+	}
 }
 
 func main() {
